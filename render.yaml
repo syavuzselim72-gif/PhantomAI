@@ -9,3 +9,7 @@ services:
         sync: false
       - key: NODE_VERSION
         value: 16
+      - key: PORT
+        value: 10000
+    healthCheckPath: /api/health
+    autoDeploy: true

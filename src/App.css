@@ -177,6 +177,8 @@
   animation: fadeIn 0.3s ease-out;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 .message:hover {
@@ -186,6 +188,8 @@
 
 .message-content {
   line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .user-message {
