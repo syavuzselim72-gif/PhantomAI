@@ -9,9 +9,30 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [theme, setTheme] = useState('default');
+  const [animationSettings, setAnimationSettings] = useState({
+    messageAnimations: true,
+    transitionEffects: true,
+    hoverEffects: true,
+    floatingElements: true,
+    loadingAnimations: true
+  });
+  const [backgroundSettings, setBackgroundSettings] = useState({
+    type: 'gradient',
+    gradient: 'default',
+    image: '',
+    color: '#ffffff'
+  });
 
   const handleThemeChange = (newTheme) => {
     setTheme(newTheme);
+  };
+
+  const handleAnimationSettingsChange = (newSettings) => {
+    setAnimationSettings(newSettings);
+  };
+
+  const handleBackgroundSettingsChange = (newSettings) => {
+    setBackgroundSettings(newSettings);
   };
 
   const getThemeColors = () => {
@@ -22,7 +43,10 @@ function App() {
       green: ['#2ecc71', '#27ae60'],
       purple: ['#9b59b6', '#8e44ad'],
       orange: ['#e67e22', '#d35400'],
-      red: ['#e74c3c', '#c0392b']
+      red: ['#e74c3c', '#c0392b'],
+      pink: ['#ff6b6b', '#ee5a24'],
+      teal: ['#1dd1a1', '#10ac84'],
+      indigo: ['#5f27cd', '#341f97']
     };
     return themes[theme] || themes.default;
   };
@@ -66,6 +90,10 @@ function App() {
         <Settings 
           theme={theme} 
           onThemeChange={handleThemeChange} 
+          animationSettings={animationSettings}
+          onAnimationSettingsChange={handleAnimationSettingsChange}
+          backgroundSettings={backgroundSettings}
+          onBackgroundSettingsChange={handleBackgroundSettingsChange}
           onClose={() => setShowSettings(false)} 
         />
       )}
