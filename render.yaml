@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: phantomai
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: NODE_VERSION
+        value: 16
