@@ -5,12 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhantomAI - Akıllı Türkçe Chatbot</title>
 
-    <!-- Server Configuration - BURAYI DÜZENLEYİN -->
+    <!-- Server Configuration - OTOMATİK IP ALGILAMA -->
     <script>
-        // Server URL'sini buradan ayarlayın
-        // Yerel kullanım için: 'http://localhost:8001'
-        // Ağ kullanımı için: 'http://[SUNUCU_IP]:8001'
-        window.SERVER_URL = 'http://localhost:8001'; // DEĞIŞTIRIN: Server IP'nizi yazın
+        // Otomatik IP algılama fonksiyonu
+        async function detectServerIP() {
+            try {
+                // Önce localhost'u dene
+                const localhostResponse = await fetch('http://localhost:8001/health', {
+                    method: 'GET',
+                    signal: AbortSignal.timeout(2000)
+                });
+                if (localhostResponse.ok) {
+                    return 'http://localhost:8001';
+                }
+            } catch (e) {
+                console.log('Localhost bağlantısı başarısız');
+            }
+
+            try {
+                // Yerel IP'yi al
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                const localIP = await getLocalIP();
+
+                if (localIP) {
+                    // Farklı IP'leri dene
+                    const possibleIPs = generatePossibleIPs(localIP);
+
+                    for (const ip of possibleIPs) {
+                        try {
+                            const testResponse = await fetch(`http://${ip}:8001/health`, {
+                                method: 'GET',
+                                signal: AbortSignal.timeout(1000)
+                            });
+                            if (testResponse.ok) {
+                                return `http://${ip}:8001`;
+                            }
+                        } catch (e) {
+                            continue;
+                        }
+                    }
+                }
+            } catch (e) {
+                console.log('Otomatik IP algılama hatası:', e);
+            }
+
+            // Hiçbiri çalışmadıysa varsayılan
+            return 'http://localhost:8001';
+        }
+
+        // Yerel IP'yi al
+        function getLocalIP() {
+            return new Promise((resolve) => {
+                const RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection;
+                if (!RTCPeerConnection) {
+                    resolve(null);
+                    return;
+                }
+
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                pc.createDataChannel('');
+                pc.onicecandidate = (e) => {
+                    if (e.candidate) {
+                        const ip = e.candidate.candidate.split(' ')[4];
+                        if (ip && ip.match(/^\d+\.\d+\.\d+\.\d+$/)) {
+                            pc.close();
+                            resolve(ip);
+                        }
+                    }
+                };
+                pc.createOffer().then(offer => pc.setLocalDescription(offer));
+                setTimeout(() => {
+                    pc.close();
+                    resolve(null);
+                }, 2000);
+            });
+        }
+
+        // Olası IP'leri üret
+        function generatePossibleIPs(baseIP) {
+            const parts = baseIP.split('.');
+            const ips = [];
+
+            // Aynı subnet'teki IP'leri dene
+            for (let i = 1; i <= 254; i++) {
+                if (i !== parseInt(parts[3])) {
+                    ips.push(`${parts[0]}.${parts[1]}.${parts[2]}.${i}`);
+                }
+            }
+
+            return ips.slice(0, 20); // İlk 20'yi dene
+        }
+
+        // Sayfa yüklendiğinde otomatik algıla
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔍 Server IP otomatik algılanıyor...');
+
+            const detectedIP = await detectServerIP();
+            window.SERVER_URL = detectedIP;
+
+            updateServerInfo();
+            console.log('✅ Otomatik algılanan server URL:', detectedIP);
+        });
     </script>
 
     <style>

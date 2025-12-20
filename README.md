@@ -91,12 +91,19 @@ window.SERVER_URL = 'https://your-server.com';
 ```bash
 python main.py
 ```
+- **Otomatik Server Algılama**: Açıldığında otomatik olarak server'ı bulur
+- **Akıllı IP Taraması**: Aynı ağdaki tüm cihazları tarar
 - **Neon Tasarım**: Koyu arka plan, neon renkler (pembe, cyan, turuncu)
 - **Particle Efektleri**: Hareketli yıldız/partikül animasyonları
 - **Glow Efektleri**: Işık saçan butonlar ve metinler
 - **Animasyonlar**: Yazma göstergesi, hover efektleri, pulsing durum noktası
-- **Server Bağlantısı**: Kolay URL ayarlama ve gerçek zamanlı durum kontrolü
 - **Modern UI**: Card tabanlı tasarım, gradient efektler
+
+**Otomatik Çalışma:**
+1. Uygulama açılır → Otomatik server arama başlar
+2. Localhost denenir → Ağ taraması yapılır
+3. Server bulunursa → Otomatik bağlanır
+4. Bulunamazsa → Manuel giriş için hazır olur
 
 **Özellikler:**
 - 🎨 **Neon Renk Paleti**: #ff0080, #00ffff, #ff8000, #8000ff, #00ff80
@@ -105,6 +112,7 @@ python main.py
 - 🎯 **Hover Animasyonları**: İnteraktif buton efektleri
 - 📊 **Gerçek Zamanlı Durum**: Bağlantı göstergesi ve animasyonları
 - 🎪 **Büyüleyici Tasarım**: Görenleri etkileyecek görsel efektler
+- 🔍 **Otomatik Algılama**: Server'ı kendiliğinden bulur
 
 ## API Endpoints
 

@@ -102,7 +102,7 @@ class NeonChatApp:
         self.root.configure(bg='#0a0a0a')
         self.root.resizable(True, True)
 
-        # Server URL
+        # Server URL - otomatik algılanacak
         self.server_url = 'http://localhost:8001'
 
         # Neon renk paleti
@@ -121,7 +121,100 @@ class NeonChatApp:
         self.create_styles()
         self.create_widgets()
         self.setup_animations()
-        self.check_connection()
+
+        # Otomatik server algılama
+        self.auto_detect_server()
+
+    def auto_detect_server(self):
+        """Otomatik olarak server IP'sini algılar"""
+        self.status_label.config(text="🔍 SERVER ARANIYOR...", fg=self.neon_colors['orange'])
+
+        def detect():
+            try:
+                # 1. Önce localhost'u dene
+                response = requests.get('http://localhost:8001/health', timeout=2)
+                if response.status_code == 200:
+                    self.root.after(0, lambda: self.on_server_found('http://localhost:8001', 'YEREL'))
+                    return
+            except:
+                pass
+
+            try:
+                # 2. Yerel IP'yi al ve aynı ağdaki IP'leri dene
+                import socket
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                local_ip = s.getsockname()[0]
+                s.close()
+
+                # Aynı subnet'teki IP'leri test et
+                ip_parts = local_ip.split('.')
+                base_ip = f"{ip_parts[0]}.{ip_parts[1]}.{ip_parts[2]}."
+
+                # Paralel olarak IP'leri test et
+                import concurrent.futures
+                import threading
+
+                found_server = None
+                found_lock = threading.Lock()
+
+                def test_ip(ip):
+                    nonlocal found_server
+                    try:
+                        response = requests.get(f'http://{ip}:8001/health', timeout=1)
+                        if response.status_code == 200:
+                            with found_lock:
+                                if not found_server:
+                                    found_server = f'http://{ip}:8001'
+                    except:
+                        pass
+
+                # 1-254 arası IP'leri test et (ama kendi IP'mizi atla)
+                test_ips = [f"{base_ip}{i}" for i in range(1, 255) if f"{base_ip}{i}" != local_ip]
+
+                # Thread pool ile paralel test
+                with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+                    futures = [executor.submit(test_ip, ip) for ip in test_ips[:50]]  # İlk 50'yi test et
+                    for future in concurrent.futures.as_completed(futures):
+                        if found_server:
+                            break
+
+                if found_server:
+                    self.root.after(0, lambda: self.on_server_found(found_server, 'AĞ'))
+                else:
+                    self.root.after(0, lambda: self.on_server_not_found())
+
+            except Exception as e:
+                logger.error(f"Otomatik algılama hatası: {e}")
+                self.root.after(0, lambda: self.on_server_not_found())
+
+        threading.Thread(target=detect, daemon=True).start()
+
+    def on_server_found(self, url, source):
+        """Server bulunduğunda çağrılır"""
+        self.server_url = url
+        self.url_entry.delete(0, tk.END)
+        self.url_entry.insert(0, url)
+
+        self.status_label.config(text=f"✅ SERVER BULUNDU ({source})", fg=self.neon_colors['green'])
+        self.connect_btn.config(text="🎉 BAĞLI")
+
+        # Başarı partikülleri
+        for _ in range(30):
+            x = random.randint(100, 800)
+            y = random.randint(100, 600)
+            particle_id = self.particle_system.create_particle(x, y)
+            self.particle_system.particles[-1]['id'] = particle_id
+
+        self.add_message(f"🎉 Server otomatik olarak bulundu: {url} ({source})", "SYSTEM")
+
+    def on_server_not_found(self):
+        """Server bulunamadığında çağrılır"""
+        self.status_label.config(text="❌ SERVER BULUNAMADI", fg=self.neon_colors['pink'])
+        self.connect_btn.config(text="🔄 TEKRAR DENE")
+
+        self.add_message("❌ Otomatik server algılama başarısız. Lütfen server URL'sini manuel girin.", "SYSTEM")
+        self.add_message("💡 Server'ı çalıştırmak için: python server.py", "SYSTEM")
 
     def create_styles(self):
         style = ttk.Style()
