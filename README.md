@@ -87,13 +87,24 @@ window.SERVER_URL = 'http://192.168.1.101:8001'; // Server IP'nizi yazın
 window.SERVER_URL = 'https://your-server.com';
 ```
 
-### Desktop Uygulaması
+### Desktop Uygulaması - NEON EDITION 🌟
 ```bash
 python main.py
 ```
-- Server URL'yi girin (örneğin: `http://192.168.1.101:8001`)
-- "Bağlan" butonuna tıklayın
-- Bağlantı başarılı olursa sohbet etmeye başlayın
+- **Neon Tasarım**: Koyu arka plan, neon renkler (pembe, cyan, turuncu)
+- **Particle Efektleri**: Hareketli yıldız/partikül animasyonları
+- **Glow Efektleri**: Işık saçan butonlar ve metinler
+- **Animasyonlar**: Yazma göstergesi, hover efektleri, pulsing durum noktası
+- **Server Bağlantısı**: Kolay URL ayarlama ve gerçek zamanlı durum kontrolü
+- **Modern UI**: Card tabanlı tasarım, gradient efektler
+
+**Özellikler:**
+- 🎨 **Neon Renk Paleti**: #ff0080, #00ffff, #ff8000, #8000ff, #00ff80
+- ✨ **Particle Sistemi**: 60 FPS animasyonlu arka plan efektleri
+- 💫 **Glow Efektleri**: Işık saçan UI öğeleri
+- 🎯 **Hover Animasyonları**: İnteraktif buton efektleri
+- 📊 **Gerçek Zamanlı Durum**: Bağlantı göstergesi ve animasyonları
+- 🎪 **Büyüleyici Tasarım**: Görenleri etkileyecek görsel efektler
 
 ## API Endpoints
 
